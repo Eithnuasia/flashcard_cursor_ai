@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>English-Indonesian Flashcards</title>
+    <link rel="stylesheet" href="style.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+  </head>
+  <body>
+    <div class="app-container">
+      <div class="header">
+        <h1>English-Indonesian Flashcards</h1>
+      </div>
+
+      <!-- Dashboard Stats -->
+      <div class="stats-container">
+        <div class="stat-card">
+          <div class="stat-value" id="totalCards">50</div>
+          <div class="stat-label">Total Cards</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="masteredCards">0</div>
+          <div class="stat-label">Mastered</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="accuracyRate">0%</div>
+          <div class="stat-label">Accuracy</div>
+        </div>
+      </div>
+
+      <!-- Search Bar -->
+      <div class="search-container">
+        <i class="fas fa-search search-icon"></i>
+        <input
+          type="text"
+          class="search-input"
+          id="searchInput"
+          placeholder="Search for words..."
+        />
+      </div>
+
+      <!-- Categories -->
+      <div class="categories" id="categories">
+        <button class="category-pill active" data-category="all">
+          All Words
+        </button>
+        <button class="category-pill" data-category="new">New Words</button>
+        <button class="category-pill" data-category="learning">Learning</button>
+        <button class="category-pill" data-category="mastered">Mastered</button>
+      </div>
+
+      <div class="progress-container">
+        <span class="progress-text" id="progressText">1/50</span>
+        <div class="progress-bar-container">
+          <div class="progress-bar-fill" id="progressBarFill"></div>
+        </div>
+        <span class="progress-text"
+          >Mastered: <span id="masteredCount">0</span></span
+        >
+      </div>
+
+      <div class="card-container">
+        <div class="card" id="flashcard" onclick="flipCard()">
+          <div class="front">
+            <h2 class="word" id="englishWord">Indescribable</h2>
+            <button class="action-btn audio-btn" onclick="playAudio(event)">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+              </svg>
+              Pronunciation
+            </button>
+            <div class="tap-instruction">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path
+                  d="M8 13v-7.5a1.5 1.5 0 0 1 3 0V18M11 11.5l3.5-1.5c.8-.3 1.6.2 1.5 1V17"
+                ></path>
+                <path d="M17 15.5L20.5 14c.8-.3 1.6.2 1.5 1V21"></path>
+              </svg>
+              Tap to flip
+            </div>
+          </div>
+          <div class="back">
+            <h2 class="translation" id="indonesianTranslation">
+              Tidak terkira
+            </h2>
+            <div class="action-buttons">
+              <button
+                class="action-btn explain-btn"
+                onclick="showExplanation(event)"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <path d="M12 16v-4M12 8h.01"></path>
+                </svg>
+                Explanation
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="controls">
+        <button class="nav-button" onclick="prevCard()">
+          <i class="fas fa-chevron-left"></i>
+        </button>
+
+        <div class="feedback-controls">
+          <button class="feedback-btn dont-know-btn" onclick="markAsUnknown()">
+            <i class="fas fa-times"></i>
+            Don't Know
+          </button>
+          <button class="feedback-btn know-btn" onclick="markAsKnown()">
+            <i class="fas fa-check"></i>
+            Know It
+          </button>
+        </div>
+
+        <button class="nav-button" onclick="nextCard()">
+          <i class="fas fa-chevron-right"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Explanation Modal -->
+    <div class="modal" id="explanationModal">
+      <div class="modal-content">
+        <span class="close-btn" onclick="closeExplanation()">&times;</span>
+        <div class="explanation" id="explanationText"></div>
+      </div>
+    </div>
+
+    <!-- Settings Panel -->
+    <div class="settings-panel" id="settingsPanel">
+      <div class="settings-header">
+        <div class="settings-title">Settings</div>
+        <button class="settings-close" onclick="toggleSettings()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+
+      <div class="settings-section">
+        <div class="settings-section-title">Study Mode</div>
+        <div class="study-modes">
+          <div class="study-mode active" data-mode="normal">
+            <div class="study-mode-title">Normal Mode</div>
+            <div class="study-mode-desc">Study cards in sequential order</div>
+          </div>
+          <div class="study-mode" data-mode="spaced">
+            <div class="study-mode-title">Spaced Repetition</div>
+            <div class="study-mode-desc">Focus on cards you find difficult</div>
+          </div>
+          <div class="study-mode" data-mode="random">
+            <div class="study-mode-title">Random Mode</div>
+            <div class="study-mode-desc">Study cards in random order</div>
+          </div>
+          <div class="study-mode" data-mode="quiz">
+            <div class="study-mode-title">Quiz Mode</div>
+            <div class="study-mode-desc">Test your knowledge with a quiz</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="settings-section">
+        <div class="settings-section-title">Theme</div>
+        <div class="theme-options">
+          <div
+            class="theme-option active"
+            data-theme="default"
+            style="background: linear-gradient(135deg, #6a11cb, #2575fc)"
+          ></div>
+          <div
+            class="theme-option"
+            data-theme="green"
+            style="background: linear-gradient(135deg, #11998e, #38ef7d)"
+          ></div>
+          <div
+            class="theme-option"
+            data-theme="red"
+            style="background: linear-gradient(135deg, #f12711, #f5af19)"
+          ></div>
+          <div
+            class="theme-option"
+            data-theme="blue"
+            style="background: linear-gradient(135deg, #4e54c8, #8f94fb)"
+          ></div>
+          <div
+            class="theme-option"
+            data-theme="dark"
+            style="background: linear-gradient(135deg, #232526, #414345)"
+          ></div>
+          <div
+            class="theme-option"
+            data-theme="pink"
+            style="background: linear-gradient(135deg, #ff0084, #33001b)"
+          ></div>
+        </div>
+      </div>
+
+      <div class="settings-section">
+        <div class="settings-section-title">Display Options</div>
+        <div class="setting-row">
+          <div class="setting-label">Show Pronunciation</div>
+          <label class="switch">
+            <input type="checkbox" id="pronunciationToggle" checked />
+            <span class="slider round"></span>
+          </label>
+        </div>
+        <div class="setting-row">
+          <div class="setting-label">Auto-Flip Cards</div>
+          <label class="switch">
+            <input type="checkbox" id="autoFlipToggle" />
+            <span class="slider round"></span>
+          </label>
+        </div>
+        <div class="setting-row">
+          <div class="setting-label">Card Flip Animation</div>
+          <label class="switch">
+            <input type="checkbox" id="animationToggle" checked />
+            <span class="slider round"></span>
+          </label>
+        </div>
+      </div>
+
+      <div class="settings-section">
+        <div class="settings-section-title">Reset Progress</div>
+        <button class="reset-btn" onclick="resetProgress()">
+          Reset All Progress
+        </button>
+      </div>
+    </div>
+
+    <div class="overlay" id="overlay" onclick="toggleSettings()"></div>
+
+    <button class="settings-btn" onclick="toggleSettings()">
+      <i class="fas fa-cog"></i>
+    </button>
+
+    <script src="script.js"></script>
+  </body>
+</html>
